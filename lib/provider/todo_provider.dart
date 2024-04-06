@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kishore_todo/model/todo_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,14 +41,15 @@ class TodoProvider with ChangeNotifier {
     await _prefs?.setString('todos', jsonString);
   }
 
-  void addTodo(String title) {
+  void addTodo({required String title, required String description}) {
     final newTodo = Todo(
-      id: DateTime.now().millisecondsSinceEpoch,
-      title: title,
-      isCompleted: false,
-    );
+        id: DateTime.now().millisecondsSinceEpoch,
+        title: title,
+        isCompleted: false,
+        description: description);
     _todos.add(newTodo);
     _saveData();
+
     notifyListeners();
   }
 
@@ -55,10 +57,10 @@ class TodoProvider with ChangeNotifier {
     final index = _todos.indexWhere((todo) => todo.id == id);
     if (index != -1) {
       _todos[index] = Todo(
-        id: _todos[index].id,
-        title: _todos[index].title,
-        isCompleted: isCompleted,
-      );
+          id: _todos[index].id,
+          title: _todos[index].title,
+          isCompleted: isCompleted,
+          description: _todos[index].description);
       _saveData();
       notifyListeners();
     }
@@ -67,6 +69,9 @@ class TodoProvider with ChangeNotifier {
   void deleteTodo(int id) {
     _todos.removeWhere((todo) => todo.id == id);
     _saveData();
+    Fluttertoast.showToast(
+      msg: "Deleted Task",
+    );
     notifyListeners();
   }
 }
